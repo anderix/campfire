@@ -1,0 +1,10 @@
+# Block direct access to application internals
+<FilesMatch "^cron\.php$">
+    Deny from all
+</FilesMatch>
+
+RewriteEngine On
+RewriteRule ^src/ - [F,L]
+RewriteRule ^templates/ - [F,L]
+RewriteRule ^db/ - [F,L]
+RewriteRule ^config\.php$ - [F,L]
