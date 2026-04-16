@@ -94,9 +94,15 @@ $sendDay = getSetting('send_day', 'Monday');
             <tbody>
                 <?php foreach ($events as $event): ?>
                 <tr>
-                    <td><?= htmlspecialchars(formatEventDate($event['start'])) ?></td>
-                    <td><?= htmlspecialchars(formatEventTime($event['start'])) ?></td>
-                    <td><?= htmlspecialchars($event['summary']) ?></td>
+                    <td><?= htmlspecialchars(formatEventDateRange($event)) ?></td>
+                    <td><?= htmlspecialchars(formatEventTimeRange($event)) ?></td>
+                    <td>
+                        <?php if (!empty($event['url'])): ?>
+                            <a href="<?= htmlspecialchars($event['url']) ?>" target="_blank" rel="noopener"><?= htmlspecialchars($event['summary']) ?></a>
+                        <?php else: ?>
+                            <?= htmlspecialchars($event['summary']) ?>
+                        <?php endif; ?>
+                    </td>
                     <td><?= htmlspecialchars($event['location'] ?? '') ?></td>
                 </tr>
                 <?php endforeach; ?>

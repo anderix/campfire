@@ -43,12 +43,21 @@
             <table width="100%" cellpadding="0" cellspacing="0" style="font-size:14px; color:#1a1a1a;">
                 <?php foreach ($events as $event): ?>
                 <tr>
-                    <td style="padding:8px 0; border-bottom:1px solid #f0f0f0; vertical-align:top; width:140px;">
-                        <strong><?= htmlspecialchars(formatEventDate($event['start'])) ?></strong><br>
-                        <span style="color:#666;"><?= htmlspecialchars(formatEventTime($event['start'])) ?></span>
+                    <td style="padding:8px 0; border-bottom:1px solid #f0f0f0; vertical-align:top; width:160px;">
+                        <strong><?= htmlspecialchars(formatEventDateRange($event)) ?></strong>
+                        <?php $timeLabel = formatEventTimeRange($event); ?>
+                        <?php if ($timeLabel !== ''): ?>
+                            <br><span style="color:#666;"><?= htmlspecialchars($timeLabel) ?></span>
+                        <?php endif; ?>
                     </td>
                     <td style="padding:8px 0 8px 12px; border-bottom:1px solid #f0f0f0; vertical-align:top;">
-                        <strong><?= htmlspecialchars($event['summary']) ?></strong>
+                        <strong>
+                            <?php if (!empty($event['url'])): ?>
+                                <a href="<?= htmlspecialchars($event['url']) ?>" style="color:#1a1a1a; text-decoration:none;"><?= htmlspecialchars($event['summary']) ?></a>
+                            <?php else: ?>
+                                <?= htmlspecialchars($event['summary']) ?>
+                            <?php endif; ?>
+                        </strong>
                         <?php if ($event['location']): ?>
                             <br><span style="color:#666;"><?= htmlspecialchars($event['location']) ?></span>
                         <?php endif; ?>

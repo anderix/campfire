@@ -2,7 +2,7 @@
 
 Personalized troop newsletters powered by your Scoutbook Plus calendar.
 
-Campfire is a lightweight PHP application that sends periodic emails to troop families with upcoming events from your Scoutbook Plus calendar and per-family scout account balances. 
+Campfire is a lightweight PHP application that sends periodic emails to troop families with upcoming events from your Scoutbook Plus calendar and per-family scout account balances.
 
 ## Features
 

@@ -10,7 +10,8 @@ function fetchCalendarEvents(string $url, int $lookaheadDays = 14): array {
 
 function parseIcal(string $ical, int $lookaheadDays = 14): array {
     $events = [];
-    $now = new DateTimeImmutable('today');
+    $tz = getDisplayTimezone();
+    $now = new DateTimeImmutable('today', $tz);
     $cutoff = $now->modify("+{$lookaheadDays} days");
 
     $blocks = preg_split('/BEGIN:VEVENT/', $ical);
@@ -39,6 +40,7 @@ function parseIcalEvent(string $block): ?array {
     $dtend = extractIcalField($block, 'DTEND');
     $location = extractIcalField($block, 'LOCATION');
     $description = extractIcalField($block, 'DESCRIPTION');
+    $url = extractIcalField($block, 'URL');
 
     if ($summary === null || $dtstart === null) {
         return null;
@@ -51,12 +53,24 @@ function parseIcalEvent(string $block): ?array {
 
     $end = $dtend ? parseIcalDate($dtend) : null;
 
+    // Scoutbook encodes all-day events as midnight-to-23:45 in local time.
+    $allDay = $start->format('H:i') === '00:00'
+           && $end !== null
+           && in_array($end->format('H:i'), ['23:45', '00:00'], true)
+           && $end > $start;
+
+    $multiDay = $end !== null
+             && $end->format('Y-m-d') !== $start->format('Y-m-d');
+
     return [
         'summary' => unescapeIcal($summary),
         'start' => $start,
         'end' => $end,
+        'all_day' => $allDay,
+        'multi_day' => $multiDay,
         'location' => $location ? unescapeIcal($location) : null,
         'description' => $description ? unescapeIcal($description) : null,
+        'url' => $url,
     ];
 }
 
@@ -102,11 +116,42 @@ function unescapeIcal(string $text): string {
     );
 }
 
-function formatEventDate(DateTimeImmutable $date): string {
-    return $date->format('l, F j');
+function formatEventDateRange(array $event): string {
+    $start = $event['start'];
+    $end = $event['end'];
+    if (!$event['multi_day']) {
+        return $start->format('l, F j');
+    }
+    if ($start->format('Y') === $end->format('Y')) {
+        return $start->format('D, M j') . ' - ' . $end->format('D, M j');
+    }
+    return $start->format('M j, Y') . ' - ' . $end->format('M j, Y');
 }
 
-function formatEventTime(DateTimeImmutable $date): string {
-    $time = $date->format('g:i A');
-    return str_replace(':00', '', $time);
+function formatEventTimeRange(array $event): string {
+    if ($event['all_day']) {
+        return 'All day';
+    }
+    if ($event['multi_day']) {
+        return '';
+    }
+    $start = $event['start'];
+    $end = $event['end'];
+    $startPart = formatTimeOfDay($start);
+    if ($end === null) {
+        return $startPart;
+    }
+    $endPart = formatTimeOfDay($end);
+    if ($startPart === $endPart) {
+        return $startPart;
+    }
+    if ($start->format('A') === $end->format('A')) {
+        $startBare = preg_replace('/ (AM|PM)$/', '', $startPart);
+        return $startBare . ' - ' . $endPart;
+    }
+    return $startPart . ' - ' . $endPart;
+}
+
+function formatTimeOfDay(DateTimeImmutable $date): string {
+    return str_replace(':00', '', $date->format('g:i A'));
 }
