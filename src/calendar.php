@@ -8,6 +8,21 @@ function fetchCalendarEvents(string $url, int $lookaheadDays = 14): array {
     return parseIcal($content, $lookaheadDays);
 }
 
+function parseIcalAll(string $ical): array {
+    $events = [];
+    $blocks = preg_split('/BEGIN:VEVENT/', $ical);
+    array_shift($blocks);
+    foreach ($blocks as $block) {
+        $block = explode('END:VEVENT', $block)[0];
+        $event = parseIcalEvent($block);
+        if ($event !== null) {
+            $events[] = $event;
+        }
+    }
+    usort($events, fn($a, $b) => $a['start'] <=> $b['start']);
+    return $events;
+}
+
 function parseIcal(string $ical, int $lookaheadDays = 14): array {
     $events = [];
     $tz = getDisplayTimezone();
@@ -68,7 +83,7 @@ function parseIcalEvent(string $block): ?array {
         'end' => $end,
         'all_day' => $allDay,
         'multi_day' => $multiDay,
-        'location' => $location ? unescapeIcal($location) : null,
+        'location' => $location && stripos($location, 'not specified') === false ? unescapeIcal($location) : null,
         'description' => $description ? unescapeIcal($description) : null,
         'url' => $url,
     ];
