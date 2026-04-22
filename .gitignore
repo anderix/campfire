@@ -2,3 +2,4 @@ db/campfire.db
 db/campfire.db-wal
 db/campfire.db-shm
 deploy.conf
+/campfire.db

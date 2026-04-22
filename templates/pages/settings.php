@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         setSetting('timezone', $_POST['timezone'] ?? 'America/Chicago');
         setSetting('send_frequency', $_POST['send_frequency'] ?? 'biweekly');
         setSetting('send_day', $_POST['send_day'] ?? 'Monday');
+        setSetting('min_days_between_sends', (string) max(0, (int) ($_POST['min_days_between_sends'] ?? 0)));
         setSetting('email_from_name', trim($_POST['email_from_name'] ?? ''));
         setSetting('email_from_address', trim($_POST['email_from_address'] ?? ''));
         setSetting('brevo_api_key', trim($_POST['brevo_api_key'] ?? ''));
@@ -138,6 +139,10 @@ $users = $db->query('SELECT id, email, display_name, created_at FROM users ORDER
                     <option value="<?= $d ?>" <?= $day === $d ? 'selected' : '' ?>><?= $d ?></option>
                 <?php endforeach; ?>
             </select>
+        </div>
+        <div class="form-group">
+            <label for="min_days_between_sends">Minimum days between sends (0 = use frequency default)</label>
+            <input type="number" id="min_days_between_sends" name="min_days_between_sends" value="<?= htmlspecialchars(getSetting('min_days_between_sends', '0')) ?>" min="0" max="365" style="width: 100px;">
         </div>
 
         <button type="submit" class="btn btn-primary">Save Settings</button>

@@ -35,7 +35,8 @@ if ($lastSend) {
     $lastDate = new DateTimeImmutable($lastSend['sent_at']);
     $daysSince = (int) $today->diff($lastDate)->days;
 
-    $minDays = match ($frequency) {
+    $override = (int) getSetting('min_days_between_sends', '0');
+    $minDays = $override > 0 ? $override : match ($frequency) {
         'weekly' => 5,
         'biweekly' => 12,
         'monthly' => 25,
