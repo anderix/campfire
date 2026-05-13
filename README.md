@@ -83,6 +83,8 @@ Campfire stores minimal data: email addresses, display names, and scout account 
 
 The application includes CSRF protection on all forms, password hashing via `password_hash()`, and `.htaccess` rules that block direct access to application internals. The SQLite database is stored in a protected directory that is not web-accessible.
 
+For the full threat model, data inventory, and how to report a vulnerability privately, see [SECURITY.md](SECURITY.md).
+
 ## License
 
 MIT
