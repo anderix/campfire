@@ -3,7 +3,13 @@
     Deny from all
 </FilesMatch>
 
+# Never serve a SQLite database, even if one lands at the web root
+<FilesMatch "\.db(-wal|-shm)?$">
+    Deny from all
+</FilesMatch>
+
 RewriteEngine On
+
 RewriteRule ^src/ - [F,L]
 RewriteRule ^templates/ - [F,L]
 RewriteRule ^db/ - [F,L]
