@@ -83,10 +83,20 @@ function parseIcalEvent(string $block): ?array {
         'end' => $end,
         'all_day' => $allDay,
         'multi_day' => $multiDay,
-        'location' => $location && stripos($location, 'not specified') === false ? unescapeIcal($location) : null,
+        'location' => isLocationPlaceholder($location) ? null : unescapeIcal($location),
         'description' => $description ? unescapeIcal($description) : null,
         'url' => $url,
     ];
+}
+
+// Scoutbook spells "no location" two different ways — a literal "None" and the
+// sentence "Location was not specified" — and neither is a real place. Both must
+// be treated as absent or they print verbatim in the newsletter.
+function isLocationPlaceholder(?string $location): bool {
+    $location = trim((string) $location);
+    return $location === ''
+        || strcasecmp($location, 'None') === 0
+        || stripos($location, 'not specified') !== false;
 }
 
 function extractIcalField(string $block, string $field): ?string {
