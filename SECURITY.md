@@ -25,7 +25,7 @@ Campfire does not call any other network endpoint. There is no telemetry, no ana
 
 ## What Campfire stores
 
-Campfire keeps everything in a single SQLite database at `db/campfire.db`, which is placed below the web root and protected by a deny-all `.htaccess` so it cannot be downloaded over HTTP.
+Campfire keeps everything in a single SQLite database at `db/campfire.db`. It sits inside the application directory rather than below the web root, so what keeps it from being downloaded is the deny-all `.htaccess` in `db/` and the rewrite rule blocking that path — on a server that does not read `.htaccess`, the operator has to reproduce both.
 
 The database holds:
 
@@ -39,7 +39,7 @@ Campfire stores no session tokens beyond the standard PHP session cookie, no rem
 
 ## What Campfire serves
 
-The web-accessible surface is intentionally small: `index.php`, `events.php`, and the assets under `public/`. The `src/`, `templates/`, `db/`, and `cron.php` paths are blocked by `.htaccess` rules. All form submissions go through a CSRF token check. The public events page at `events.php` shows event titles and times only, never recipient lists or account balances.
+The web-accessible surface is intentionally small: `index.php` and the assets under `public/`. The `src/`, `templates/`, `db/`, `config.php`, and `cron.php` paths are blocked by `.htaccess` rules. All form submissions go through a CSRF token check.
 
 ## Operator responsibilities
 
