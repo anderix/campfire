@@ -13,4 +13,4 @@ RewriteEngine On
 RewriteRule ^src/ - [F,L]
 RewriteRule ^templates/ - [F,L]
 RewriteRule ^db/ - [F,L]
-RewriteRule ^config\.php$ - [F,L]
+RewriteRule ^config(\.local)?\.php$ - [F,L]
